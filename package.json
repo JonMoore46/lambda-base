@@ -1,0 +1,37 @@
+{
+  "name": "hello-world-lambda",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "build": "rimraf dist && tsc",
+    "test": "glob -c \"node --test --require ts-node/register\" \"./tests/**/*.ts\"",
+    "format": "prettier --write \"**/*.{js,ts,tsx}\"",
+    "lint": "eslint \"**/*.ts\"",
+    "package": "npm run build && cd dist && zip -r ../${npm_package_name}-${npm_package_version}.zip .",
+    "upload": "aws-vault exec iam-fantasy-football -- aws s3 cp ${npm_package_name}-${npm_package_version}.zip s3://${npm_package_name}-bucket/${npm_package_name}-${npm_package_version}.zip",
+    "upload-ci": "aws s3 cp ${npm_package_name}-${npm_package_version}.zip s3://${npm_package_name}-bucket/${npm_package_name}-${npm_package_version}.zip",
+    "update-lambda": "aws-vault exec iam-fantasy-football -- aws lambda update-function-code --function-name ${npm_package_name} --s3-bucket ${npm_package_name}-bucket --s3-key ${npm_package_name}-${npm_package_version}.zip",
+    "update-lambda-ci": "aws lambda update-function-code --function-name ${npm_package_name} --s3-bucket ${npm_package_name}-bucket --s3-key ${npm_package_name}-${npm_package_version}.zip",
+    "build-and-deploy": "npm run build && npm run package && npm run upload && npm run update-lambda",
+    "build-and-deploy-ci": "npm run build && npm run package && npm run upload-ci && npm run update-lambda-ci",
+    "run-local": "node -r ts-node/register --env-file=.env ./run-local.ts"
+  },
+  "keywords": [],
+  "author": "Jon Moore",
+  "license": "ISC",
+  "devDependencies": {
+    "@eslint/js": "^9.11.0",
+    "@types/aws-lambda": "^8.10.134",
+    "@types/eslint__js": "^8.42.3",
+    "@types/node": "^20.11.19",
+    "aws-lambda": "^1.0.7",
+    "eslint": "^9.11.0",
+    "prettier": "^3.3.3",
+    "rimraf": "^5.0.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2",
+    "typescript-eslint": "^8.6.0"
+  }
+}
